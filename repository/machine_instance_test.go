@@ -14,6 +14,12 @@ func TestRepositoryMachineInstance(t *testing.T) {
 	dsn := "host=db user=admin password=secretpassword dbname=lexon_engine_test_db port=5432 sslmode=disable"
 	pool, _ := pgxpool.New(context.Background(), dsn)
 
+	// Clean up the machine_instances table before running tests
+	_, err := pool.Exec(context.Background(), "DELETE FROM lexon.machine_instances")
+	if err != nil {
+		t.Fatalf("Failed to clean up machine_instances table: %v", err)
+	}
+
 	t.Run("Create MachineInstance for legal procedure", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
 		legalProcedure := domain.LegalProcedure{

@@ -12,6 +12,16 @@ func TestEngineStart(t *testing.T) {
 	dsn := "host=db user=admin password=secretpassword dbname=lexon_engine_test_db port=5432 sslmode=disable"
 	pool, _ := pgxpool.New(context.Background(), dsn)
 
+	// Clean database before running tests
+	_, err := pool.Exec(context.Background(), "DELETE FROM lexon.legal_procedures")
+	if err != nil {
+		t.Fatalf("Failed to clean up legal_procedures table: %v", err)
+	}
+	_, err = pool.Exec(context.Background(), "DELETE FROM lexon.machine_instances")
+	if err != nil {
+		t.Fatalf("Failed to clean up machine_instances table: %v", err)
+	}
+
 	engine := NewEngineHandler(EngineParams{
 		Ctx:  context.Background(),
 		Pool: pool,

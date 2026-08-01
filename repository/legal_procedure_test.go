@@ -13,6 +13,12 @@ func TestRepositoryLegalProcedure(t *testing.T) {
 	dsn := "host=db user=admin password=secretpassword dbname=lexon_engine_test_db port=5432 sslmode=disable"
 	pool, _ := pgxpool.New(context.Background(), dsn)
 
+	// Clean up the legal_procedures table before running tests
+	_, err := pool.Exec(context.Background(), "DELETE FROM lexon.legal_procedures")
+	if err != nil {
+		t.Fatalf("Failed to clean up legal_procedures table: %v", err)
+	}
+
 	t.Run("Save LegalProcedure", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
 		legalProcedure := domain.LegalProcedure{
