@@ -21,6 +21,14 @@ func TestEngineStart(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to clean up machine_instances table: %v", err)
 	}
+	_, err = pool.Exec(context.Background(), "DELETE FROM lexon.legal_records")
+	if err != nil {
+		t.Fatalf("Failed to clean up legal_records table: %v", err)
+	}
+	_, err = pool.Exec(context.Background(), "DELETE FROM lexon.legal_claims")
+	if err != nil {
+		t.Fatalf("Failed to clean up legal_claims table: %v", err)
+	}
 
 	engine := NewEngineHandler(EngineParams{
 		Ctx:  context.Background(),
