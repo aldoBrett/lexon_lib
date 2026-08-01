@@ -6,6 +6,17 @@ type LegalProcedure struct {
 	Description string `json:"description"`
 }
 
+type LegalRecord struct {
+	ID               string `json:"id"`
+	LegalProcedureID string `json:"legal_procedure_id"`
+	TrialKind        string `json:"trial_kind"`
+	RecordNumber     string `json:"record_number"`
+	//? Should it be also an table in the database or just a string?
+	Actor            string `json:"actor"`
+	Defendant        string `json:"defendant"`
+	DefendantAddress string `json:"defendant_address"`
+}
+
 type DocumentData struct {
 	Kind string `json:"kind"`
 }
@@ -43,6 +54,14 @@ type MachineEvent struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Kind        string `json:"kind"`
+}
+
+type MachineInstance struct {
+	ID               string  `json:"id"`
+	CurrentStateID   *string `json:"current_state_id,omitempty"`
+	LegalProcedureID string  `json:"legal_procedure_id"`
+	CreatedAt        string  `json:"created_at"`
+	UpdatedAt        string  `json:"updated_at"`
 }
 
 // It represents a signal that can come from different origins,

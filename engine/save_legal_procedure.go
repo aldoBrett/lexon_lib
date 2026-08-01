@@ -17,6 +17,11 @@ func (e *EngineHandler) EngineSaveLegalProcedure(legalProcedure LegalProcedure) 
 		if err != nil {
 			panic(err)
 		}
+
+		machineInstanceError := e.EngineCreate(legalProcedure.ID)
+		if machineInstanceError != nil {
+			panic(machineInstanceError)
+		}
 	} else {
 		// If the legal procedure exists, update its name and description
 		updateQuery := `UPDATE lexon.legal_procedures SET name = $1, description = $2 WHERE id = $3`
