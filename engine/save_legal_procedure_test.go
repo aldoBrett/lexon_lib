@@ -33,21 +33,21 @@ func TestEngineSaveLegalProcedure(t *testing.T) {
 
 		legalProcedure := LegalProcedure{
 			ID:          id,
-			Name:        "Test Legal Procedure",
+			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",
 		}
 
 		engine.EngineSaveLegalProcedure(legalProcedure)
 
 		// Verify that the legal procedure was saved correctly
-		query := `SELECT id, name, description FROM lexon.legal_procedures WHERE id = $1`
+		query := `SELECT id, label, description FROM lexon.legal_procedures WHERE id = $1`
 		var savedLegalProcedure LegalProcedure
-		err := engine.pool.QueryRow(engine.ctx, query, id).Scan(&savedLegalProcedure.ID, &savedLegalProcedure.Name, &savedLegalProcedure.Description)
+		err := engine.pool.QueryRow(engine.ctx, query, id).Scan(&savedLegalProcedure.ID, &savedLegalProcedure.Label, &savedLegalProcedure.Description)
 		if err != nil {
 			t.Fatalf("Failed to retrieve saved legal procedure: %v", err)
 		}
 
-		if savedLegalProcedure.ID != legalProcedure.ID || savedLegalProcedure.Name != legalProcedure.Name || savedLegalProcedure.Description != legalProcedure.Description {
+		if savedLegalProcedure.ID != legalProcedure.ID || savedLegalProcedure.Label != legalProcedure.Label || savedLegalProcedure.Description != legalProcedure.Description {
 			t.Fatalf("Saved legal procedure does not match the expected values")
 		}
 	})

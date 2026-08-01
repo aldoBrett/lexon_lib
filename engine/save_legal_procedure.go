@@ -12,8 +12,8 @@ func (e *EngineHandler) EngineSaveLegalProcedure(legalProcedure LegalProcedure) 
 	err := e.pool.QueryRow(e.ctx, query, legalProcedure.ID).Scan(&id)
 	if err != nil {
 		// If the legal procedure doesn't exist, create a new one
-		insertQuery := `INSERT INTO lexon.legal_procedures (id, name, description) VALUES ($1, $2, $3)`
-		_, err = e.pool.Exec(e.ctx, insertQuery, legalProcedure.ID, legalProcedure.Name, legalProcedure.Description)
+		insertQuery := `INSERT INTO lexon.legal_procedures (id, label, description) VALUES ($1, $2, $3)`
+		_, err = e.pool.Exec(e.ctx, insertQuery, legalProcedure.ID, legalProcedure.Label, legalProcedure.Description)
 		if err != nil {
 			panic(err)
 		}
@@ -23,9 +23,9 @@ func (e *EngineHandler) EngineSaveLegalProcedure(legalProcedure LegalProcedure) 
 			panic(machineInstanceError)
 		}
 	} else {
-		// If the legal procedure exists, update its name and description
-		updateQuery := `UPDATE lexon.legal_procedures SET name = $1, description = $2 WHERE id = $3`
-		_, err = e.pool.Exec(e.ctx, updateQuery, legalProcedure.Name, legalProcedure.Description, legalProcedure.ID)
+		// If the legal procedure exists, update its label and description
+		updateQuery := `UPDATE lexon.legal_procedures SET label = $1, description = $2 WHERE id = $3`
+		_, err = e.pool.Exec(e.ctx, updateQuery, legalProcedure.Label, legalProcedure.Description, legalProcedure.ID)
 		if err != nil {
 			panic(err)
 		}

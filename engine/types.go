@@ -2,7 +2,7 @@ package engine
 
 type LegalProcedure struct {
 	ID          string `json:"id"`
-	Name        string `json:"name"`
+	Label       string `json:"label"`
 	Description string `json:"description"`
 }
 

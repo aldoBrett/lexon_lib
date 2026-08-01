@@ -33,7 +33,7 @@ func TestEngineGetLegalProcedure(t *testing.T) {
 
 		legalProcedure := LegalProcedure{
 			ID:          id,
-			Name:        "Test Legal Procedure",
+			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",
 		}
 
@@ -41,7 +41,7 @@ func TestEngineGetLegalProcedure(t *testing.T) {
 
 		// Verify that the legal procedure was retrieved correctly
 		retrievedLegalProcedure := engine.EngineGetLegalProcedure(id)
-		if retrievedLegalProcedure.ID != legalProcedure.ID || retrievedLegalProcedure.Name != legalProcedure.Name || retrievedLegalProcedure.Description != legalProcedure.Description {
+		if retrievedLegalProcedure.ID != legalProcedure.ID || retrievedLegalProcedure.Label != legalProcedure.Label || retrievedLegalProcedure.Description != legalProcedure.Description {
 			t.Fatalf("Retrieved legal procedure does not match the expected values")
 		}
 	})

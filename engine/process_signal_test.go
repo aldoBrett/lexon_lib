@@ -20,9 +20,11 @@ func TestEngineProcessSignal(t *testing.T) {
 	legalProcedureId := uuid.New().String()
 	legalProcedure := LegalProcedure{
 		ID:          legalProcedureId,
-		Name:        "Test Legal Procedure",
+		Label:       "Test Legal Procedure",
 		Description: "Test Legal Procedure Description",
 	}
+	// También vamos a agregar la info del expediente base.
+	// Y también vienen las pretenciones.
 	engine.EngineSaveLegalProcedure(legalProcedure)
 
 	// signal := MachineSignal{
