@@ -1,15 +1,15 @@
 package repository
 
 import (
-	"amox/lex_engine_lib/engine"
+	"amox/lex_engine_lib/domain"
 	"context"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type LegalProcedureRepository interface {
-	SaveLegalProcedure(legalProcedure engine.LegalProcedure) error
-	GetLegalProcedureByID(id string) (*engine.LegalProcedure, error)
+	SaveLegalProcedure(legalProcedure domain.LegalProcedure) error
+	GetLegalProcedureByID(id string) (*domain.LegalProcedure, error)
 }
 
 type LegalProcedureRepositoryHandler struct {
@@ -27,7 +27,7 @@ func NewLegalProcedureRepositoryHandler(ctx context.Context, pool *pgxpool.Pool)
 // This function will look for the ID of the legal procedure, if it doesn't
 // exists, it will create a new one. If it exists, it will update the label and
 // description of the legal procedure.
-func (h *LegalProcedureRepositoryHandler) SaveLegalProcedure(legalProcedure engine.LegalProcedure) error {
+func (h *LegalProcedureRepositoryHandler) SaveLegalProcedure(legalProcedure domain.LegalProcedure) error {
 	query := `SELECT id FROM lexon.legal_procedures WHERE id = $1`
 	var id string
 	err := h.pool.QueryRow(h.Ctx, query, legalProcedure.ID).Scan(&id)
@@ -52,9 +52,9 @@ func (h *LegalProcedureRepositoryHandler) SaveLegalProcedure(legalProcedure engi
 
 // This function is used to get a LegalProcedure from the database by its
 // id.
-func (h *LegalProcedureRepositoryHandler) GetLegalProcedureByID(id string) (*engine.LegalProcedure, error) {
+func (h *LegalProcedureRepositoryHandler) GetLegalProcedureByID(id string) (*domain.LegalProcedure, error) {
 	query := `SELECT id, label, description FROM lexon.legal_procedures WHERE id = $1`
-	var legalProcedure engine.LegalProcedure
+	var legalProcedure domain.LegalProcedure
 	err := h.pool.QueryRow(h.Ctx, query, id).Scan(&legalProcedure.ID, &legalProcedure.Label, &legalProcedure.Description)
 	if err != nil {
 		return nil, err

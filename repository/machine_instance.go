@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"amox/lex_engine_lib/engine"
+	"amox/lex_engine_lib/domain"
 	"context"
 	"fmt"
 
@@ -11,8 +11,8 @@ import (
 )
 
 type MachineInstanceRepository interface {
-	SaveMachineInstance(machineInstance engine.MachineInstance) error
-	GetMachineInstanceByID(id string) (*engine.MachineInstance, error)
+	CreateMachineInstanceForLegalProcedure(legalProcedureId string) error
+	GetMachineInstanceByLegalProcedureID(legalProcedureId string) (*domain.MachineInstance, error)
 }
 
 type MachineInstanceRepositoryHandler struct {
@@ -61,9 +61,9 @@ func (h *MachineInstanceRepositoryHandler) CreateMachineInstanceForLegalProcedur
 // 	return &machineInstance, nil
 // }
 
-func (h *MachineInstanceRepositoryHandler) GetMachineInstanceByLegalProcedureID(legalProcedureId string) (*engine.MachineInstance, error) {
-	query := `SELECT id, name, current_state_id, legal_procedure_id FROM lexon.machine_instances WHERE legal_procedure_id = $1`
-	var machineInstance engine.MachineInstance
+func (h *MachineInstanceRepositoryHandler) GetMachineInstanceByLegalProcedureID(legalProcedureId string) (*domain.MachineInstance, error) {
+	query := `SELECT id, current_state_id, legal_procedure_id FROM lexon.machine_instances WHERE legal_procedure_id = $1`
+	var machineInstance domain.MachineInstance
 	err := h.pool.QueryRow(h.Ctx, query, legalProcedureId).Scan(
 		&machineInstance.ID,
 		&machineInstance.CurrentStateID,

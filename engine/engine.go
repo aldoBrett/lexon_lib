@@ -3,6 +3,8 @@ package engine
 import (
 	"context"
 
+	"amox/lex_engine_lib/repository"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -12,13 +14,11 @@ type EngineParams struct {
 }
 
 type EngineHandler struct {
-	ctx  context.Context
-	pool *pgxpool.Pool
+	repos *repository.Repositories
 }
 
 func NewEngineHandler(params EngineParams) *EngineHandler {
 	return &EngineHandler{
-		ctx:  params.Ctx,
-		pool: params.Pool,
+		repos: repository.NewRepositories(params.Ctx, params.Pool),
 	}
 }

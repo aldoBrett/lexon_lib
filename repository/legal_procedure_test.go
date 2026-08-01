@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"amox/lex_engine_lib/engine"
+	"amox/lex_engine_lib/domain"
 	"context"
 	"testing"
 
@@ -15,7 +15,7 @@ func TestRepositoryLegalProcedure(t *testing.T) {
 
 	t.Run("Save LegalProcedure", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
-		legalProcedure := engine.LegalProcedure{
+		legalProcedure := domain.LegalProcedure{
 			ID:          legalProcedureId,
 			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",
@@ -29,7 +29,7 @@ func TestRepositoryLegalProcedure(t *testing.T) {
 
 		// Verify that the legal procedure was saved correctly
 		query := `SELECT id, label, description FROM lexon.legal_procedures WHERE id = $1`
-		var savedLegalProcedure engine.LegalProcedure
+		var savedLegalProcedure domain.LegalProcedure
 		err = pool.QueryRow(context.Background(), query, legalProcedureId).Scan(&savedLegalProcedure.ID, &savedLegalProcedure.Label, &savedLegalProcedure.Description)
 		if err != nil {
 			t.Fatalf("Failed to retrieve saved legal procedure: %v", err)
@@ -42,7 +42,7 @@ func TestRepositoryLegalProcedure(t *testing.T) {
 
 	t.Run("Save and get LegalProcedure", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
-		legalProcedure := engine.LegalProcedure{
+		legalProcedure := domain.LegalProcedure{
 			ID:          legalProcedureId,
 			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",

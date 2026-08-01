@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"amox/lex_engine_lib/engine"
+	"amox/lex_engine_lib/domain"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -16,7 +16,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 
 	t.Run("Create MachineInstance for legal procedure", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
-		legalProcedure := engine.LegalProcedure{
+		legalProcedure := domain.LegalProcedure{
 			ID:          legalProcedureId,
 			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",
@@ -38,7 +38,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 
 		// Verify that the machine instance was created correctly
 		query := `SELECT id, legal_procedure_id FROM lexon.machine_instances WHERE legal_procedure_id = $1`
-		var savedMachineInstance engine.MachineInstance
+		var savedMachineInstance domain.MachineInstance
 		err = pool.QueryRow(context.Background(), query, legalProcedureId).Scan(&savedMachineInstance.ID, &savedMachineInstance.LegalProcedureID)
 		if err != nil {
 			t.Fatalf("Failed to retrieve saved machine instance: %v", err)
@@ -51,7 +51,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 
 	t.Run("Create MachineInstance for legal procedure that already has one", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
-		legalProcedure := engine.LegalProcedure{
+		legalProcedure := domain.LegalProcedure{
 			ID:          legalProcedureId,
 			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",
@@ -86,7 +86,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 
 	t.Run("Get MachineInstance by legal procedure ID", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()
-		legalProcedure := engine.LegalProcedure{
+		legalProcedure := domain.LegalProcedure{
 			ID:          legalProcedureId,
 			Label:       "Test Legal Procedure",
 			Description: "Test Legal Procedure Description",
