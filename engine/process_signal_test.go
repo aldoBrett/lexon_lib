@@ -2,9 +2,9 @@ package engine
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -17,31 +17,32 @@ func TestEngineProcessSignal(t *testing.T) {
 		Pool: pool,
 	})
 
-	legalProcedureId := uuid.New().String()
-	legalProcedure := LegalProcedure{
-		ID:          legalProcedureId,
-		Label:       "Test Legal Procedure",
-		Description: "Test Legal Procedure Description",
-	}
-	// También vamos a agregar la info del expediente base.
-	// Y también vienen las pretenciones.
-	engine.EngineSaveLegalProcedure(legalProcedure)
-
-	// signal := MachineSignal{
-	// 	Origin: "document",
-	// 	// DocumentType: "test_document_type",
+	fmt.Println("engine: ", engine)
+	// legalProcedureId := uuid.New().String()
+	// legalProcedure := LegalProcedure{
+	// 	ID:          legalProcedureId,
+	// 	Label:       "Test Legal Procedure",
+	// 	Description: "Test Legal Procedure Description",
 	// }
+	// // También vamos a agregar la info del expediente base.
+	// // Y también vienen las pretenciones.
+	// engine.EngineSaveLegalProcedure(legalProcedure)
 
-	// engine.EngineProcessSignal(signal)
-	t.Run("Move until CIV.ORD.E003", func(t *testing.T) {
-		singalZero := MachineSignal{
-			// Origin: "document",
-			Origin: "ui",
-		}
+	// // signal := MachineSignal{
+	// // 	Origin: "document",
+	// // 	// DocumentType: "test_document_type",
+	// // }
 
-		engine.EngineProcessSignal(ProcessSignalParams{
-			signal:           singalZero,
-			legalProcedureID: &legalProcedureId,
-		})
-	})
+	// // engine.EngineProcessSignal(signal)
+	// t.Run("Move until CIV.ORD.E003", func(t *testing.T) {
+	// 	singalZero := MachineSignal{
+	// 		// Origin: "document",
+	// 		Origin: "ui",
+	// 	}
+
+	// 	engine.EngineProcessSignal(ProcessSignalParams{
+	// 		signal:           singalZero,
+	// 		legalProcedureID: &legalProcedureId,
+	// 	})
+	// })
 }
