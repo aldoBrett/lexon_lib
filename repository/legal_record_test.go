@@ -97,4 +97,45 @@ func TestRepositoryLegalRecord(t *testing.T) {
 			t.Fatalf("Updated legal record does not match the expected values")
 		}
 	})
+
+	t.Run("Save and get LegalRecord by LegalProcedure ID", func(t *testing.T) {
+		legalProcedureId := uuid.New().String()
+		legalProcedure := domain.LegalProcedure{
+			ID:          legalProcedureId,
+			Label:       "Test Legal Procedure",
+			Description: "Test Legal Procedure Description",
+		}
+		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
+		if err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
+			t.Fatalf("Failed to save legal procedure: %v", err)
+		}
+
+		legalRecord := domain.LegalRecord{
+			LegalProcedureID: &legalProcedureId,
+			Actor:            "Test Actor",
+			Defendant:        "Test Defendant",
+		}
+
+		savedLegalRecord, err := repository.SaveLegalRecord(legalRecord)
+		if err != nil {
+			t.Fatalf("Failed to save legal record: %v", err)
+		}
+
+		retrievedLegalRecords, err := repository.GetLegalRecordsByLegalProcedureID(legalProcedureId)
+		if err != nil {
+			t.Fatalf("Failed to get legal records by legal procedure ID: %v", err)
+		}
+
+		if len(retrievedLegalRecords) != 1 {
+			t.Fatalf("Expected 1 legal record, got %d", len(retrievedLegalRecords))
+		}
+
+		retrievedLegalRecord := retrievedLegalRecords[0]
+		if retrievedLegalRecord.ID != savedLegalRecord.ID {
+			t.Fatalf("Retrieved legal record ID does not match the saved legal record ID")
+		}
+		if retrievedLegalRecord.Actor != "Test Actor" || retrievedLegalRecord.Defendant != "Test Defendant" {
+			t.Fatalf("Retrieved legal record does not match the expected values")
+		}
+	})
 }

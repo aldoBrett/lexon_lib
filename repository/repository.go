@@ -10,6 +10,7 @@ type Repositories struct {
 	LegalProcedure  LegalProcedureRepository
 	MachineInstance MachineInstanceRepository
 	LegalRecord     LegalRecordRepository
+	LegalClaims     LegalClaimsRepository
 }
 
 func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
@@ -17,5 +18,6 @@ func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
 		LegalProcedure:  NewLegalProcedureRepositoryHandler(ctx, pool),
 		MachineInstance: NewMachineInstanceRepositoryHandler(ctx, pool),
 		LegalRecord:     NewLegalRecordRepositoryHandler(ctx, pool),
+		LegalClaims:     NewLegalClaimsRepositoryHandler(ctx, pool),
 	}
 }

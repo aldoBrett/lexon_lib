@@ -26,7 +26,20 @@ func (e *EngineHandler) Start(params StartParams) error {
 	legalRecord := params.legalRecord
 	legalRecord.LegalProcedureID = &params.legalProcedure.ID
 
-	fmt.Println("legalRecord: ", legalRecord)
+	savedLegalRecord, err := e.repos.LegalRecord.SaveLegalRecord(legalRecord)
+	fmt.Println("ssssssssssssssssssss: ", savedLegalRecord)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("======-=-=-=-=-=-=-=-=-=-")
+
+	for _, claim := range params.legalClaims {
+		claim.LegalRecordID = savedLegalRecord.ID
+
+		fmt.Println("-------------claim: ", claim)
+		e.repos.LegalClaims.SaveLegalClaim(claim)
+	}
 
 	return nil
 }

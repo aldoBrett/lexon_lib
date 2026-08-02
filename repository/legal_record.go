@@ -10,6 +10,7 @@ import (
 
 type LegalRecordRepository interface {
 	SaveLegalRecord(legalRecord domain.LegalRecord) (*domain.LegalRecord, error)
+	GetLegalRecordsByLegalProcedureID(legalProcedureID string) ([]domain.LegalRecord, error)
 	// GetLegalRecordByID(id string) (*domain.LegalRecord, error)
 }
 
@@ -63,4 +64,56 @@ func (h *LegalRecordRepositoryHandler) SaveLegalRecord(legalRecord domain.LegalR
 	}
 
 	return &legalRecord, nil
+}
+
+func (h *LegalRecordRepositoryHandler) GetLegalRecordByID(id string) (*domain.LegalRecord, error) {
+	query := `SELECT id, legal_procedure_id, trial_kind, record_number, actor, defendant, defendant_address FROM lexon.legal_records WHERE id = $1`
+	var legalRecord domain.LegalRecord
+	err := h.pool.QueryRow(h.Ctx, query, id).Scan(
+		&legalRecord.ID,
+		&legalRecord.LegalProcedureID,
+		&legalRecord.TrialKind,
+		&legalRecord.RecordNumber,
+		&legalRecord.Actor,
+		&legalRecord.Defendant,
+		&legalRecord.DefendantAddress,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return &legalRecord, nil
+}
+
+func (h *LegalRecordRepositoryHandler) GetLegalRecordsByLegalProcedureID(legalProcedureID string) ([]domain.LegalRecord, error) {
+	query := `SELECT id, legal_procedure_id, trial_kind, record_number, actor, defendant, defendant_address FROM lexon.legal_records WHERE legal_procedure_id = $1`
+	rows, err := h.pool.Query(h.Ctx, query, legalProcedureID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var legalRecords []domain.LegalRecord
+	for rows.Next() {
+		var legalRecord domain.LegalRecord
+		err := rows.Scan(
+			&legalRecord.ID,
+			&legalRecord.LegalProcedureID,
+			&legalRecord.TrialKind,
+			&legalRecord.RecordNumber,
+			&legalRecord.Actor,
+			&legalRecord.Defendant,
+			&legalRecord.DefendantAddress,
+		)
+		if err != nil {
+			return nil, err
+		}
+		legalRecords = append(legalRecords, legalRecord)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return legalRecords, nil
 }

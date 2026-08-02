@@ -10,7 +10,7 @@ import (
 
 type LegalClaimsRepository interface {
 	SaveLegalClaim(legalClaim domain.LegalClaim) (*domain.LegalClaim, error)
-	// GetLegalClaimsByLegalRecordID(legalRecordId string) ([]domain.LegalClaim, error)
+	GetLegalClaimsByLegalRecordID(legalRecordId string) ([]domain.LegalClaim, error)
 }
 
 type LegalClaimsRepositoryHandler struct {
@@ -50,4 +50,29 @@ func (h *LegalClaimsRepositoryHandler) SaveLegalClaim(legalClaim domain.LegalCla
 		return nil, err
 	}
 	return &legalClaim, nil
+}
+
+func (h *LegalClaimsRepositoryHandler) GetLegalClaimsByLegalRecordID(legalRecordId string) ([]domain.LegalClaim, error) {
+	query := `SELECT id, legal_record_id, description FROM lexon.legal_claims WHERE legal_record_id = $1`
+	rows, err := h.pool.Query(h.Ctx, query, legalRecordId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var legalClaims []domain.LegalClaim
+	for rows.Next() {
+		var legalClaim domain.LegalClaim
+		err := rows.Scan(&legalClaim.ID, &legalClaim.LegalRecordID, &legalClaim.Description)
+		if err != nil {
+			return nil, err
+		}
+		legalClaims = append(legalClaims, legalClaim)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return legalClaims, nil
 }

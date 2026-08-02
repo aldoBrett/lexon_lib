@@ -59,6 +59,41 @@ func TestEngineStart(t *testing.T) {
 			legalRecord:    legalRecord,
 			legalClaims:    legalClaims,
 		})
+
+		// Verify that the legal procedure was saved correctly
+		savedLegalProcedure, err := engine.repos.LegalProcedure.GetLegalProcedureByID(legalProcedureId)
+		if err != nil {
+			t.Fatalf("Failed to get legal procedure: %v", err)
+		}
+		if savedLegalProcedure.ID != legalProcedureId {
+			t.Fatalf("Saved legal procedure does not match the expected ID")
+		}
+
+		// Verify that the legal record was saved correctly
+		legalRecords, err := engine.repos.LegalRecord.GetLegalRecordsByLegalProcedureID(legalProcedureId)
+		if err != nil {
+			t.Fatalf("Failed to get legal records: %v", err)
+		}
+		if len(legalRecords) != 1 {
+			t.Fatalf("Expected 1 legal record, got %d", len(legalRecords))
+		}
+		retrievedLegalRecord := legalRecords[0]
+		if retrievedLegalRecord.Actor != "Test Actor" || retrievedLegalRecord.Defendant != "Test Defendant" {
+			t.Fatalf("Retrieved legal record does not match the expected values")
+		}
+
+		// Verify that the legal claim was saved correctly
+		legalClaims, err := engine.repos.LegalClaims.GetLegalClaimsByLegalRecordID(retrievedLegalRecord.ID)
+		if err != nil {
+			t.Fatalf("Failed to get legal claims: %v", err)
+		}
+		if len(legalClaims) != 1 {
+			t.Fatalf("Expected 1 legal claim, got %d", len(legalClaims))
+		}
+		retrievedLegalClaim := legalClaims[0]
+		if retrievedLegalClaim.Description != "Legal claim description" {
+			t.Fatalf("Retrieved legal claim does not match the expected values")
+		}
 	})
 
 }
