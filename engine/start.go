@@ -10,6 +10,9 @@ type StartParams struct {
 	// documentData   *DocumentData
 }
 
+// This function will be called when the user is creating a new legal procedure. This will create
+// save the data of LegalProcedure, LegalRecord and LegalClaims in the database. It will also create
+// a MachineInstance and depending on the data it will move the machine to a particular state.
 func (e *EngineHandler) Start(params StartParams) error {
 	if err := e.repos.LegalProcedure.SaveLegalProcedure(params.legalProcedure); err != nil {
 		return err
