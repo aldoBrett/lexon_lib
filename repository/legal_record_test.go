@@ -34,7 +34,7 @@ func TestRepositoryLegalRecord(t *testing.T) {
 			Description: "Test Legal Procedure Description",
 		}
 		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		if err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
+		if _, err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
 
@@ -69,7 +69,7 @@ func TestRepositoryLegalRecord(t *testing.T) {
 			Description: "Test Legal Procedure Description",
 		}
 		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		if err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
+		if _, err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
 
@@ -106,7 +106,7 @@ func TestRepositoryLegalRecord(t *testing.T) {
 			Description: "Test Legal Procedure Description",
 		}
 		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		if err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
+		if _, err := legalProcedureRepository.SaveLegalProcedure(legalProcedure); err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
 

@@ -31,7 +31,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 		//? Is this necessary? Maybe if we check on the creationg of the machine instance that the
 		//? legalProcedure exists...
 		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		err := legalProcedureRepository.SaveLegalProcedure(legalProcedure)
+		_, err := legalProcedureRepository.SaveLegalProcedure(legalProcedure)
 		if err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
@@ -63,7 +63,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 			Description: "Test Legal Procedure Description",
 		}
 		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		err := legalProcedureRepository.SaveLegalProcedure(legalProcedure)
+		_, err := legalProcedureRepository.SaveLegalProcedure(legalProcedure)
 		if err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
@@ -98,7 +98,7 @@ func TestRepositoryMachineInstance(t *testing.T) {
 			Description: "Test Legal Procedure Description",
 		}
 		legalProcedureRepository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		err := legalProcedureRepository.SaveLegalProcedure(legalProcedure)
+		_, err := legalProcedureRepository.SaveLegalProcedure(legalProcedure)
 		if err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
