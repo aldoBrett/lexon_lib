@@ -8,7 +8,7 @@ import (
 )
 
 type LegalProcedureRepository interface {
-	SaveLegalProcedure(legalProcedure domain.LegalProcedure) error
+	SaveLegalProcedure(legalProcedure domain.LegalProcedure) (*domain.LegalProcedure, error)
 	GetLegalProcedureByID(id string) (*domain.LegalProcedure, error)
 }
 
@@ -27,27 +27,29 @@ func NewLegalProcedureRepositoryHandler(ctx context.Context, pool *pgxpool.Pool)
 // This function will look for the ID of the legal procedure, if it doesn't
 // exists, it will create a new one. If it exists, it will update the label and
 // description of the legal procedure.
-func (h *LegalProcedureRepositoryHandler) SaveLegalProcedure(legalProcedure domain.LegalProcedure) error {
+func (h *LegalProcedureRepositoryHandler) SaveLegalProcedure(legalProcedure domain.LegalProcedure) (*domain.LegalProcedure, error) {
 	query := `SELECT id FROM lexon.legal_procedures WHERE id = $1`
 	var id string
 	err := h.pool.QueryRow(h.Ctx, query, legalProcedure.ID).Scan(&id)
+
+	var saved domain.LegalProcedure
 	if err != nil {
 		// If the legal procedure doesn't exist, create a new one
-		insertQuery := `INSERT INTO lexon.legal_procedures (id, label, description) VALUES ($1, $2, $3)`
-		_, err = h.pool.Exec(h.Ctx, insertQuery, legalProcedure.ID, legalProcedure.Label, legalProcedure.Description)
+		insertQuery := `INSERT INTO lexon.legal_procedures (id, label, description) VALUES ($1, $2, $3) RETURNING id, label, description`
+		err = h.pool.QueryRow(h.Ctx, insertQuery, legalProcedure.ID, legalProcedure.Label, legalProcedure.Description).Scan(&saved.ID, &saved.Label, &saved.Description)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	} else {
 		// If the legal procedure exists, update its label and description
-		updateQuery := `UPDATE lexon.legal_procedures SET label = $1, description = $2 WHERE id = $3`
-		_, err = h.pool.Exec(h.Ctx, updateQuery, legalProcedure.Label, legalProcedure.Description, legalProcedure.ID)
+		updateQuery := `UPDATE lexon.legal_procedures SET label = $1, description = $2 WHERE id = $3 RETURNING id, label, description`
+		err = h.pool.QueryRow(h.Ctx, updateQuery, legalProcedure.Label, legalProcedure.Description, legalProcedure.ID).Scan(&saved.ID, &saved.Label, &saved.Description)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	return &saved, nil
 }
 
 // This function is used to get a LegalProcedure from the database by its

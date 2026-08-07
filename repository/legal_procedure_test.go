@@ -28,17 +28,9 @@ func TestRepositoryLegalProcedure(t *testing.T) {
 		}
 
 		repository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		err := repository.SaveLegalProcedure(legalProcedure)
+		savedLegalProcedure, err := repository.SaveLegalProcedure(legalProcedure)
 		if err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
-		}
-
-		// Verify that the legal procedure was saved correctly
-		query := `SELECT id, label, description FROM lexon.legal_procedures WHERE id = $1`
-		var savedLegalProcedure domain.LegalProcedure
-		err = pool.QueryRow(context.Background(), query, legalProcedureId).Scan(&savedLegalProcedure.ID, &savedLegalProcedure.Label, &savedLegalProcedure.Description)
-		if err != nil {
-			t.Fatalf("Failed to retrieve saved legal procedure: %v", err)
 		}
 
 		if savedLegalProcedure.ID != legalProcedure.ID || savedLegalProcedure.Label != legalProcedure.Label || savedLegalProcedure.Description != legalProcedure.Description {
@@ -55,7 +47,7 @@ func TestRepositoryLegalProcedure(t *testing.T) {
 		}
 
 		repository := NewLegalProcedureRepositoryHandler(context.Background(), pool)
-		err := repository.SaveLegalProcedure(legalProcedure)
+		_, err := repository.SaveLegalProcedure(legalProcedure)
 		if err != nil {
 			t.Fatalf("Failed to save legal procedure: %v", err)
 		}
