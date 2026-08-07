@@ -19,7 +19,7 @@ func TestMachineInstancesRepository(t *testing.T) {
 		t.Fatalf("Failed to clean up machine_instances table: %v", err)
 	}
 
-	repository := NewMachineInstancesRepositoryHandler(pool, context.Background())
+	repository := NewMachineInstancesRepositoryHandler(context.Background(), pool)
 
 	t.Run("Create MachineInstance for legal procedure", func(t *testing.T) {
 		legalProcedureId := uuid.New().String()

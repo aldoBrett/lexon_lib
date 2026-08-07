@@ -21,7 +21,7 @@ type MachineInstancesRepositoryHandler struct {
 	Ctx  context.Context
 }
 
-func NewMachineInstancesRepositoryHandler(pool *pgxpool.Pool, ctx context.Context) *MachineInstancesRepositoryHandler {
+func NewMachineInstancesRepositoryHandler(ctx context.Context, pool *pgxpool.Pool) *MachineInstancesRepositoryHandler {
 	return &MachineInstancesRepositoryHandler{
 		pool: pool,
 		Ctx:  ctx,
