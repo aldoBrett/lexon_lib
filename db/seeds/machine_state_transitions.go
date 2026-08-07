@@ -1,13 +1,21 @@
 package seeds
 
+import (
+	"context"
+	"fmt"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
+)
+
 // MachineStateTransition mirrors a row of lexon.machine_state_transitions.
 //
-// SourceState and TargetState are not always real lexon.machine_states IDs:
-// "*" denotes a wildcard source (any state), and values such as
-// FUERA_DE_ALCANCE, FUJO_RECURSO, ALERTA_CADUCIDAD, ESTADO_PRINCIPAL_PREVIO,
-// ESTADO_PREVIO and ESTADO_ACTUAL are pseudo-state exit markers rather than
-// rows in machine_states. Loading this data therefore requires resolving
-// those cases before/instead of relying on the table's foreign keys.
+// A handful of transitions from the source material use "*" as a wildcard
+// source (any state) or pseudo-state exit markers (FUERA_DE_ALCANCE,
+// FUJO_RECURSO, ALERTA_CADUCIDAD, ESTADO_PRINCIPAL_PREVIO, ESTADO_PREVIO,
+// ESTADO_ACTUAL) that are not rows in machine_states. Those are commented
+// out below pending a decision on how to represent them; the rest reference
+// only real machine_states IDs and are safe to load as-is.
 type MachineStateTransition struct {
 	ID          string
 	SourceState string
@@ -22,7 +30,7 @@ type MachineStateTransition struct {
 var MachineStateTransitions = []MachineStateTransition{
 	{ID: "T001", SourceState: "CIV.ORD.S00", Condition: "pretension_registrada = TRUE", TargetState: "CIV.ORD.S00", Actions: "Guardar pretensión; solicitar documentos base", Risk: "Bajo", Note: "No crea término"},
 	{ID: "T002", SourceState: "CIV.ORD.S00", Condition: "via_ordinaria = TRUE", TargetState: "CIV.ORD.S01", Actions: "Crear checklist de demanda ordinaria", Risk: "Medio", Note: "Art. 638"},
-	{ID: "T003", SourceState: "CIV.ORD.S00", Condition: "via_ordinaria = FALSE", TargetState: "FUERA_DE_ALCANCE", Actions: "Desviar a procedimiento aplicable", Risk: "Alto", Note: "No forzar flujo ordinario"},
+	// {ID: "T003", SourceState: "CIV.ORD.S00", Condition: "via_ordinaria = FALSE", TargetState: "FUERA_DE_ALCANCE", Actions: "Desviar a procedimiento aplicable", Risk: "Alto", Note: "No forzar flujo ordinario"},
 	{ID: "T004", SourceState: "CIV.ORD.S01", Condition: "demanda_y_anexos_registrados = TRUE", TargetState: "CIV.ORD.S02", Actions: "Crear expediente; conservar acuse y fecha/hora", Risk: "Alto", Note: "Arts. 612, 614, 623"},
 	{ID: "T005", SourceState: "CIV.ORD.S02", Condition: "prevencion_emitida = TRUE", TargetState: "CIV.ORD.S04", Actions: "Crear tarea; calcular plazo indicado; elevar riesgo", Risk: "Crítico", Note: "Arts. 616, 621"},
 	{ID: "T006", SourceState: "CIV.ORD.S04", Condition: "presentado_en_plazo = TRUE AND cumplimiento_suficiente = TRUE", TargetState: "CIV.ORD.S03", Actions: "Adjuntar escrito; solicitar nueva revisión", Risk: "Alto", Note: "Revisión judicial"},
@@ -64,18 +72,48 @@ var MachineStateTransitions = []MachineStateTransition{
 	{ID: "T042", SourceState: "CIV.ORD.S20", Condition: "instruccion_cerrada = TRUE", TargetState: "CIV.ORD.S21", Actions: "Crear control judicial de quince días", Risk: "Medio", Note: "Art. 644"},
 	{ID: "T043", SourceState: "CIV.ORD.S21", Condition: "sentencia_emitida = TRUE", TargetState: "CIV.ORD.S22", Actions: "Clasificar sentido y puntos resolutivos", Risk: "Crítico", Note: "Arts. 644-645"},
 	{ID: "T044", SourceState: "CIV.ORD.S22", Condition: "notificacion_valida = TRUE", TargetState: "CIV.ORD.S23", Actions: "Crear decisión: impugnar o ejecutar", Risk: "Crítico", Note: "Plazo del medio aplicable"},
-	{ID: "T045", SourceState: "CIV.ORD.S23", Condition: "recurso_presentado = TRUE", TargetState: "FUJO_RECURSO", Actions: "Crear expediente relacionado de impugnación", Risk: "Crítico", Note: "Desviar a BMEP de recurso"},
+	// {ID: "T045", SourceState: "CIV.ORD.S23", Condition: "recurso_presentado = TRUE", TargetState: "FUJO_RECURSO", Actions: "Crear expediente relacionado de impugnación", Risk: "Crítico", Note: "Desviar a BMEP de recurso"},
 	{ID: "T046", SourceState: "CIV.ORD.S23", Condition: "sentencia_firme = TRUE", TargetState: "CIV.ORD.S24", Actions: "Habilitar ejecución", Risk: "Alto", Note: "Firmeza confirmada"},
 	{ID: "T047", SourceState: "CIV.ORD.S24", Condition: "ejecucion_solicitada = TRUE", TargetState: "CIV.ORD.S24", Actions: "Crear flujo de requerimiento, embargo o cumplimiento", Risk: "Alto", Note: "BMEP de ejecución"},
 	{ID: "T048", SourceState: "CIV.ORD.S24", Condition: "cumplimiento_total = TRUE", TargetState: "CIV.ORD.S27", Actions: "Cerrar expediente con evidencia", Risk: "Bajo", Note: "Estado terminal"},
-	{ID: "T049", SourceState: "*", Condition: "convenio_valido_y_aprobado = TRUE", TargetState: "CIV.ORD.S28", Actions: "Cerrar términos pendientes y conservar convenio", Risk: "Medio", Note: "Transición transversal"},
+	// {ID: "T049", SourceState: "*", Condition: "convenio_valido_y_aprobado = TRUE", TargetState: "CIV.ORD.S28", Actions: "Cerrar términos pendientes y conservar convenio", Risk: "Medio", Note: "Transición transversal"},
 	{ID: "T050", SourceState: "CIV.ORD.S01", Condition: "desistimiento_presentado = TRUE", TargetState: "CIV.ORD.S29", Actions: "Cerrar preparación", Risk: "Bajo", Note: "Antes del emplazamiento"},
 	{ID: "T051", SourceState: "CIV.ORD.S07", Condition: "consentimiento_demandado = TRUE OR desistimiento_accion = TRUE", TargetState: "CIV.ORD.S29", Actions: "Registrar costas/efectos según supuesto", Risk: "Alto", Note: "Art. 3"},
-	{ID: "T052", SourceState: "*", Condition: "inactividad_dias_naturales >= 120 AND primera_instancia = TRUE AND impedimento_suspensivo = FALSE AND sentencia_ordenada = FALSE", TargetState: "ALERTA_CADUCIDAD", Actions: "Alerta crítica; revisión humana", Risk: "Crítico", Note: "Art. 3"},
-	{ID: "T053", SourceState: "*", Condition: "caducidad_decretada = TRUE", TargetState: "CIV.ORD.S30", Actions: "Cerrar instancia; conservar posibilidad de nueva acción si procede", Risk: "Crítico", Note: "Art. 3"},
-	{ID: "T054", SourceState: "*", Condition: "incidente_admitido = TRUE", TargetState: "CIV.ORD.S26", Actions: "Crear subflujo paralelo sin borrar estado principal", Risk: "Alto", Note: "Incidente"},
-	{ID: "T055", SourceState: "CIV.ORD.S26", Condition: "incidente_resuelto = TRUE", TargetState: "ESTADO_PRINCIPAL_PREVIO", Actions: "Cerrar subflujo y ejecutar efectos", Risk: "Alto", Note: "Retorno controlado"},
-	{ID: "T056", SourceState: "*", Condition: "suspension_decretada = TRUE", TargetState: "CIV.ORD.S25", Actions: "Congelar términos afectados; conservar no afectados", Risk: "Crítico", Note: "Requiere regla individual"},
-	{ID: "T057", SourceState: "CIV.ORD.S25", Condition: "reanudacion_decretada = TRUE", TargetState: "ESTADO_PREVIO", Actions: "Recalcular términos conforme resolución", Risk: "Crítico", Note: "No asumir reanudación automática"},
-	{ID: "T058", SourceState: "*", Condition: "falla_confirmada_por_administrador = TRUE", TargetState: "ESTADO_ACTUAL", Actions: "Adjuntar reporte y someter efecto al tribunal", Risk: "Crítico", Note: "Art. 75"},
+	// {ID: "T052", SourceState: "*", Condition: "inactividad_dias_naturales >= 120 AND primera_instancia = TRUE AND impedimento_suspensivo = FALSE AND sentencia_ordenada = FALSE", TargetState: "ALERTA_CADUCIDAD", Actions: "Alerta crítica; revisión humana", Risk: "Crítico", Note: "Art. 3"},
+	// {ID: "T053", SourceState: "*", Condition: "caducidad_decretada = TRUE", TargetState: "CIV.ORD.S30", Actions: "Cerrar instancia; conservar posibilidad de nueva acción si procede", Risk: "Crítico", Note: "Art. 3"},
+	// {ID: "T054", SourceState: "*", Condition: "incidente_admitido = TRUE", TargetState: "CIV.ORD.S26", Actions: "Crear subflujo paralelo sin borrar estado principal", Risk: "Alto", Note: "Incidente"},
+	// {ID: "T055", SourceState: "CIV.ORD.S26", Condition: "incidente_resuelto = TRUE", TargetState: "ESTADO_PRINCIPAL_PREVIO", Actions: "Cerrar subflujo y ejecutar efectos", Risk: "Alto", Note: "Retorno controlado"},
+	// {ID: "T056", SourceState: "*", Condition: "suspension_decretada = TRUE", TargetState: "CIV.ORD.S25", Actions: "Congelar términos afectados; conservar no afectados", Risk: "Crítico", Note: "Requiere regla individual"},
+	// {ID: "T057", SourceState: "CIV.ORD.S25", Condition: "reanudacion_decretada = TRUE", TargetState: "ESTADO_PREVIO", Actions: "Recalcular términos conforme resolución", Risk: "Crítico", Note: "No asumir reanudación automática"},
+	// {ID: "T058", SourceState: "*", Condition: "falla_confirmada_por_administrador = TRUE", TargetState: "ESTADO_ACTUAL", Actions: "Adjuntar reporte y someter efecto al tribunal", Risk: "Crítico", Note: "Art. 75"},
+}
+
+// SeedMachineStateTransitions upserts MachineStateTransitions into lexon.machine_state_transitions.
+func SeedMachineStateTransitions(ctx context.Context, pool *pgxpool.Pool) error {
+	batch := &pgx.Batch{}
+	for _, t := range MachineStateTransitions {
+		batch.Queue(
+			`INSERT INTO lexon.machine_state_transitions (id, source_state_id, target_state_id, condition, actions, risk, note)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7)
+			 ON CONFLICT (id) DO UPDATE SET
+			   source_state_id = EXCLUDED.source_state_id,
+			   target_state_id = EXCLUDED.target_state_id,
+			   condition = EXCLUDED.condition,
+			   actions = EXCLUDED.actions,
+			   risk = EXCLUDED.risk,
+			   note = EXCLUDED.note`,
+			t.ID, t.SourceState, t.TargetState, t.Condition, t.Actions, t.Risk, t.Note,
+		)
+	}
+
+	br := pool.SendBatch(ctx, batch)
+	defer br.Close()
+
+	for range MachineStateTransitions {
+		if _, err := br.Exec(); err != nil {
+			return fmt.Errorf("seeds: insert machine state transition: %w", err)
+		}
+	}
+
+	return nil
 }

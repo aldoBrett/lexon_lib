@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type LegalProcedure struct {
 	ID          string `json:"id"`
 	Label       string `json:"label"`
@@ -15,12 +17,22 @@ type LegalRecord struct {
 	Actor            string  `json:"actor"`
 	Defendant        string  `json:"defendant"`
 	DefendantAddress *string `json:"defendant_address"`
+	// Id of the legal action associated with this legal record, if any. This field is optional and can be null.
+	ActionID *string `json:"action_id"`
 }
 
 type LegalClaim struct {
 	ID            string `json:"id"`
 	LegalRecordID string `json:"legal_record_id"`
 	Description   string `json:"description"`
+}
+
+type LegalAction struct {
+	ID          string `json:"id"`
+	Category    string `json:"category"`
+	SubCategory string `json:"sub_category"`
+	ActionName  string `json:"action_name"`
+	Via         string `json:"via"`
 }
 
 type DocumentData struct {
@@ -38,14 +50,14 @@ type MachineState struct {
 type MachineStateTransition struct {
 	ID string `json:"id"`
 	// Code          string `json:"code"`
-	SourceStateID string `json:"source_state_id"`
-	TargetStateID string `json:"target_state_id"`
-	Condition     string `json:"condition"`
-	Actions       string `json:"actions"`
-	Risk          string `json:"risk"`
-	Note          string `json:"note"`
-	CreatedAt     string `json:"created_at"`
-	UpdatedAt     string `json:"updated_at"`
+	SourceStateID string    `json:"source_state_id"`
+	TargetStateID string    `json:"target_state_id"`
+	Condition     string    `json:"condition"`
+	Actions       string    `json:"actions"`
+	Risk          string    `json:"risk"`
+	Note          string    `json:"note"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 
 	// SourceStateID string `json:"source_state_id"`
 
@@ -84,5 +96,6 @@ type MachineSignal struct {
 	// If the signal comes from a document this are the possible values:
 	//   - demanda
 	//   - prevencion
-	DocumentType string `json:"document_type"`
+	DocumentType string  `json:"document_type"`
+	TransitionID *string `json:"transition_id,omitempty"`
 }

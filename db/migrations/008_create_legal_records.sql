@@ -14,5 +14,6 @@ CREATE TABLE
         defendant_address TEXT,
         -- court TEXT NOT NULL,
         -- jurisdiction TEXT NOT NULL,
+        legal_action_id TEXT REFERENCES lexon.legal_actions (id) ON DELETE SET NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
