@@ -75,11 +75,11 @@ type MachineEvent struct {
 }
 
 type MachineInstance struct {
-	ID               string  `json:"id"`
-	CurrentStateID   *string `json:"current_state_id,omitempty"`
-	LegalProcedureID string  `json:"legal_procedure_id"`
-	CreatedAt        string  `json:"created_at"`
-	UpdatedAt        string  `json:"updated_at"`
+	ID               string    `json:"id"`
+	CurrentStateID   *string   `json:"current_state_id,omitempty"`
+	LegalProcedureID string    `json:"legal_procedure_id"`
+	CreatedAt        time.Time `json:"created_at"`
+	UpdatedAt        time.Time `json:"updated_at"`
 }
 
 // It represents a signal that can come from different origins,

@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"amox/lex_engine_lib/domain"
 
@@ -14,6 +13,7 @@ import (
 type MachineInstancesRepository interface {
 	CreateMachineInstanceForLegalProcedure(legalProcedureID string) (*domain.MachineInstance, error)
 	GetMachineInstanceByLegalProcedureID(legalProcedureID string) (*domain.MachineInstance, error)
+	UpdateMachineInstanceCurrentState(machineInstanceID string, nextState string) (*domain.MachineInstance, error)
 }
 
 type MachineInstancesRepositoryHandler struct {
@@ -54,19 +54,33 @@ func (h *MachineInstancesRepositoryHandler) CreateMachineInstanceForLegalProcedu
 // If it doesn't exist, we're going to return an error.
 func (h *MachineInstancesRepositoryHandler) GetMachineInstanceByLegalProcedureID(legalProcedureID string) (*domain.MachineInstance, error) {
 	machineInstance := &domain.MachineInstance{}
-	var createdAt, updatedAt time.Time
 	query := `SELECT id, current_state_id, legal_procedure_id, created_at, updated_at FROM lexon.machine_instances WHERE legal_procedure_id = $1`
 	err := h.pool.QueryRow(h.Ctx, query, legalProcedureID).Scan(
 		&machineInstance.ID,
 		&machineInstance.CurrentStateID,
 		&machineInstance.LegalProcedureID,
-		&createdAt,
-		&updatedAt,
+		&machineInstance.CreatedAt,
+		&machineInstance.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
-	machineInstance.CreatedAt = createdAt.Format(time.RFC3339)
-	machineInstance.UpdatedAt = updatedAt.Format(time.RFC3339)
+	return machineInstance, nil
+}
+
+func (h *MachineInstancesRepositoryHandler) UpdateMachineInstanceCurrentState(machineInstanceID string, nextState string) (*domain.MachineInstance, error) {
+	machineInstance := &domain.MachineInstance{}
+	updateQuery := `UPDATE lexon.machine_instances SET current_state_id = $1, updated_at = NOW() WHERE id = $2
+		RETURNING id, current_state_id, legal_procedure_id, created_at, updated_at`
+	err := h.pool.QueryRow(h.Ctx, updateQuery, nextState, machineInstanceID).Scan(
+		&machineInstance.ID,
+		&machineInstance.CurrentStateID,
+		&machineInstance.LegalProcedureID,
+		&machineInstance.CreatedAt,
+		&machineInstance.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
 	return machineInstance, nil
 }
