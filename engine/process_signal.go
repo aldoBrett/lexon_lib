@@ -34,6 +34,7 @@ func (e *EngineHandler) applyTransition(machineInstance *domain.MachineInstance,
 func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.MachineInstance, error) {
 
 	if params.legalProcedureID != nil {
+		//? Should this go?
 		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(*params.legalProcedureID)
 		if err != nil {
 			fmt.Println("Error retrieving machine instance:", err)
@@ -43,43 +44,6 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 		fmt.Println("Machine Instance ID:", machineInstance.ID)
 		fmt.Println("Current State ID:", machineInstance.CurrentStateID)
 		fmt.Println("Legal Procedure ID:", machineInstance.LegalProcedureID)
-
-	}
-
-	if params.signal.TransitionID != nil {
-		// Bring the transition from the database using the transition ID
-		fmt.Println("TTTTTTTTTTT: ", params.signal.TransitionID)
-		transition, err := e.repos.MachineTransitions.GetMachineTransitionByID(*params.signal.TransitionID)
-		if err != nil {
-			fmt.Println("Error retrieving transition:", err)
-			return nil, err
-		}
-
-		fmt.Println("||||| Transition:", transition)
-		fmt.Println("legalProcedure:  ", e.legalProcedure)
-		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(e.legalProcedure.ID)
-		if err != nil {
-			fmt.Println("Error retrieving machine instance:", err)
-			return nil, err
-		}
-
-		fmt.Println("> Machine Instance ID:", machineInstance.ID)
-		fmt.Println("> Current State ID:", machineInstance.CurrentStateID)
-		fmt.Println("> Legal Procedure ID:", machineInstance.LegalProcedureID)
-		stateZero := "CIV.ORD.S00"
-
-		fmt.Println("cccccccccccccccccccccccccc: ", machineInstance.CurrentStateID)
-		if machineInstance.CurrentStateID == nil {
-			fmt.Println("Current state is nil::::::::::: ", &machineInstance.CurrentStateID)
-		}
-
-		// This is the case for when we're starting the machine
-		if machineInstance.CurrentStateID == nil && transition.ID == "T001" {
-			return e.applyTransition(machineInstance, transition)
-		} else if machineInstance.CurrentStateID == &stateZero && transition.ID == "T002" {
-			fmt.Println("================================================*-*")
-			return e.applyTransition(machineInstance, transition)
-		}
 
 	}
 
