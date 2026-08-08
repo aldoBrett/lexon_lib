@@ -7,19 +7,21 @@ import (
 )
 
 type Repositories struct {
-	LegalProcedure     LegalProcedureRepository
-	LegalRecord        LegalRecordRepository
-	LegalClaims        LegalClaimsRepository
-	MachineInstances   MachineInstancesRepository
-	MachineTransitions MachineTransitionsRepository
+	LegalProcedure            LegalProcedureRepository
+	LegalRecord               LegalRecordRepository
+	LegalClaims               LegalClaimsRepository
+	MachineInstances          MachineInstancesRepository
+	MachineTransitions        MachineTransitionsRepository
+	MachineTransitionsHistory MachineStateTransitionsHistoryRepository
 }
 
 func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
 	return &Repositories{
-		LegalProcedure:     NewLegalProcedureRepositoryHandler(ctx, pool),
-		LegalRecord:        NewLegalRecordRepositoryHandler(ctx, pool),
-		LegalClaims:        NewLegalClaimsRepositoryHandler(ctx, pool),
-		MachineInstances:   NewMachineInstancesRepositoryHandler(ctx, pool),
-		MachineTransitions: NewMachineTransitionsRepositoryHandler(ctx, pool),
+		LegalProcedure:            NewLegalProcedureRepositoryHandler(ctx, pool),
+		LegalRecord:               NewLegalRecordRepositoryHandler(ctx, pool),
+		LegalClaims:               NewLegalClaimsRepositoryHandler(ctx, pool),
+		MachineInstances:          NewMachineInstancesRepositoryHandler(ctx, pool),
+		MachineTransitions:        NewMachineTransitionsRepositoryHandler(ctx, pool),
+		MachineTransitionsHistory: NewMachineStateTransitionsHistoryRepositoryHandler(ctx, pool),
 	}
 }

@@ -67,6 +67,13 @@ type MachineStateTransition struct {
 	// TargetID string `json:"target"`
 }
 
+type MachineStateTransitionHistory struct {
+	ID                string    `json:"id"`
+	MachineInstanceID string    `json:"machine_instance_id"`
+	TransitionID      string    `json:"transition_id"`
+	CreatedAt         time.Time `json:"created_at"`
+}
+
 type MachineEvent struct {
 	ID          string `json:"id"`
 	Code        string `json:"code"`

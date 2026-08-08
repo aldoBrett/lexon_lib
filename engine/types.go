@@ -8,6 +8,7 @@ type LegalClaim = domain.LegalClaim
 type DocumentData = domain.DocumentData
 type MachineState = domain.MachineState
 type MachineStateTransition = domain.MachineStateTransition
+type MachineStateTransitionHistory = domain.MachineStateTransitionHistory
 type MachineEvent = domain.MachineEvent
 type MachineInstance = domain.MachineInstance
 type MachineSignal = domain.MachineSignal

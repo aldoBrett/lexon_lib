@@ -10,6 +10,27 @@ type ProcessSignalParams struct {
 	legalProcedureID *string
 }
 
+// applyTransition moves a MachineInstance to the target state of the given transition and
+// records the move in the transitions history table. Every state change should go through
+// this so the history table stays a complete audit trail.
+func (e *EngineHandler) applyTransition(machineInstance *domain.MachineInstance, transition *domain.MachineStateTransition) (*domain.MachineInstance, error) {
+	updatedMachineInstance, err := e.repos.MachineInstances.UpdateMachineInstanceCurrentState(
+		machineInstance.ID,
+		transition.TargetStateID,
+	)
+	if err != nil {
+		fmt.Println("Error updating machine instance:", err)
+		return nil, err
+	}
+
+	if _, err := e.repos.MachineTransitionsHistory.CreateMachineStateTransitionHistory(machineInstance.ID, transition.ID); err != nil {
+		fmt.Println("Error recording machine state transition history:", err)
+		return nil, err
+	}
+
+	return updatedMachineInstance, nil
+}
+
 func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.MachineInstance, error) {
 
 	if params.legalProcedureID != nil {
@@ -54,30 +75,10 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 
 		// This is the case for when we're starting the machine
 		if machineInstance.CurrentStateID == nil && transition.ID == "T001" {
-			// TODO: add the history stuff
-
-			updatedMachineInstance, err := e.repos.MachineInstances.UpdateMachineInstanceCurrentState(
-				machineInstance.ID,
-				transition.TargetStateID,
-			)
-			if err != nil {
-				fmt.Println("Error updating machine instance:", err)
-				return nil, err
-			}
-
-			return updatedMachineInstance, nil
+			return e.applyTransition(machineInstance, transition)
 		} else if machineInstance.CurrentStateID == &stateZero && transition.ID == "T002" {
 			fmt.Println("================================================*-*")
-			updatedMachineInstance, err := e.repos.MachineInstances.UpdateMachineInstanceCurrentState(
-				machineInstance.ID,
-				transition.TargetStateID,
-			)
-			if err != nil {
-				fmt.Println("Error updating machine instance:", err)
-				return nil, err
-			}
-
-			return updatedMachineInstance, nil
+			return e.applyTransition(machineInstance, transition)
 		}
 
 	}
@@ -100,16 +101,7 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 			return nil, err
 		}
 
-		updatedMachineInstance, err := e.repos.MachineInstances.UpdateMachineInstanceCurrentState(
-			machineInstance.ID,
-			transition.TargetStateID,
-		)
-		if err != nil {
-			fmt.Println("Error updating machine instance:", err)
-			return nil, err
-		}
-
-		return updatedMachineInstance, nil
+		return e.applyTransition(machineInstance, transition)
 	}
 
 	return nil, nil
