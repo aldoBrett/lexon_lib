@@ -34,4 +34,25 @@ func TestMachineTransitionsRepository(t *testing.T) {
 			t.Fatalf("Expected non-empty source state ID, but got empty")
 		}
 	})
+
+	t.Run("Get machine transition by source state ID and event ID", func(t *testing.T) {
+		sourceStateID := "CIV.ORD.S00"
+		eventID := "CIV.ORD.E001"
+
+		machineTransition, err := repository.GetMachineTransitionBySourceAndEvent(sourceStateID, eventID)
+		if err != nil {
+			t.Fatalf("Failed to get machine transition by source state ID and event ID: %v", err)
+		}
+
+		if machineTransition == nil {
+			t.Fatalf("Expected machine transition, but got nil")
+		}
+
+		if machineTransition.SourceStateID != sourceStateID {
+			t.Fatalf("Expected source state ID %s, but got %s", sourceStateID, machineTransition.SourceStateID)
+		}
+		if machineTransition.EventID != eventID {
+			t.Fatalf("Expected event ID %s, but got %s", eventID, machineTransition.EventID)
+		}
+	})
 }
