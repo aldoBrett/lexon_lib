@@ -52,6 +52,7 @@ type MachineStateTransition struct {
 	// Code          string `json:"code"`
 	SourceStateID string    `json:"source_state_id"`
 	TargetStateID string    `json:"target_state_id"`
+	EventID       string    `json:"event_id"`
 	Condition     string    `json:"condition"`
 	Actions       string    `json:"actions"`
 	Risk          string    `json:"risk"`

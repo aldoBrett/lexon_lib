@@ -3,6 +3,7 @@ CREATE TABLE
         id TEXT PRIMARY KEY NOT NULL,
         source_state_id TEXT NOT NULL REFERENCES lexon.machine_states (id) ON DELETE CASCADE,
         target_state_id TEXT NOT NULL REFERENCES lexon.machine_states (id) ON DELETE CASCADE,
+        event_id TEXT NOT NULL REFERENCES lexon.machine_events (id) ON DELETE CASCADE,
         condition TEXT NOT NULL,
         actions TEXT NOT NULL,
         risk TEXT NOT NULL,
