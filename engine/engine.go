@@ -14,7 +14,8 @@ type EngineParams struct {
 }
 
 type EngineHandler struct {
-	repos *repository.Repositories
+	repos          *repository.Repositories
+	legalProcedure *LegalProcedure
 }
 
 func NewEngineHandler(params EngineParams) *EngineHandler {
