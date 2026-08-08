@@ -99,4 +99,5 @@ type MachineSignal struct {
 	//   - prevencion
 	DocumentType string  `json:"document_type"`
 	TransitionID *string `json:"transition_id,omitempty"`
+	EventID      *string `json:"event_id,omitempty"`
 }

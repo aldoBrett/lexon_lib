@@ -30,8 +30,8 @@ type MachineStateTransition struct {
 var MachineStateTransitions = []MachineStateTransition{
 	{
 		ID:          "T001",
-		EventID:     "CIV.ORD.E001",
 		SourceState: "CIV.ORD.S00",
+		EventID:     "CIV.ORD.E001",
 		Condition:   "",
 		TargetState: "CIV.ORD.S00",
 		Actions:     "",

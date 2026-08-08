@@ -11,7 +11,6 @@ type ProcessSignalParams struct {
 }
 
 func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.MachineInstance, error) {
-	fmt.Println("|>*<|*****------------->params: ", params)
 
 	if params.legalProcedureID != nil {
 		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(*params.legalProcedureID)
@@ -25,8 +24,6 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 		fmt.Println("Legal Procedure ID:", machineInstance.LegalProcedureID)
 
 	}
-
-	fmt.Println("SSsSsSSsSssSsSsignal:  ", params.signal)
 
 	if params.signal.TransitionID != nil {
 		// Bring the transition from the database using the transition ID
@@ -48,6 +45,13 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 		fmt.Println("> Machine Instance ID:", machineInstance.ID)
 		fmt.Println("> Current State ID:", machineInstance.CurrentStateID)
 		fmt.Println("> Legal Procedure ID:", machineInstance.LegalProcedureID)
+		stateZero := "CIV.ORD.S00"
+
+		fmt.Println("cccccccccccccccccccccccccc: ", machineInstance.CurrentStateID)
+		if machineInstance.CurrentStateID == nil {
+			fmt.Println("Current state is nil::::::::::: ", &machineInstance.CurrentStateID)
+		}
+
 		// This is the case for when we're starting the machine
 		if machineInstance.CurrentStateID == nil && transition.ID == "T001" {
 			// TODO: add the history stuff
@@ -62,8 +66,50 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 			}
 
 			return updatedMachineInstance, nil
+		} else if machineInstance.CurrentStateID == &stateZero && transition.ID == "T002" {
+			fmt.Println("================================================*-*")
+			updatedMachineInstance, err := e.repos.MachineInstances.UpdateMachineInstanceCurrentState(
+				machineInstance.ID,
+				transition.TargetStateID,
+			)
+			if err != nil {
+				fmt.Println("Error updating machine instance:", err)
+				return nil, err
+			}
+
+			return updatedMachineInstance, nil
 		}
 
+	}
+
+	if params.signal.EventID != nil {
+		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(e.legalProcedure.ID)
+		if err != nil {
+			fmt.Println("Error retrieving machine instance:", err)
+			return nil, err
+		}
+
+		currentStateID := "CIV.ORD.S00"
+		if machineInstance.CurrentStateID != nil {
+			currentStateID = *machineInstance.CurrentStateID
+		}
+
+		transition, err := e.repos.MachineTransitions.GetMachineTransitionBySourceAndEvent(currentStateID, *params.signal.EventID)
+		if err != nil {
+			fmt.Println("Error retrieving transition:", err)
+			return nil, err
+		}
+
+		updatedMachineInstance, err := e.repos.MachineInstances.UpdateMachineInstanceCurrentState(
+			machineInstance.ID,
+			transition.TargetStateID,
+		)
+		if err != nil {
+			fmt.Println("Error updating machine instance:", err)
+			return nil, err
+		}
+
+		return updatedMachineInstance, nil
 	}
 
 	return nil, nil
