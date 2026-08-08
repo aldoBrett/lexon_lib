@@ -100,7 +100,6 @@ func TestEngineProcessSignal(t *testing.T) {
 	})
 
 	t.Run("Start engine and move by EventID to CIV.ORD.E002", func(t *testing.T) {
-		t.Skip("")
 		engine := NewEngineHandler(EngineParams{
 			Ctx:  context.Background(),
 			Pool: pool,
