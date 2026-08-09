@@ -10,6 +10,8 @@ import (
 type LegalProcedureRepository interface {
 	SaveLegalProcedure(legalProcedure domain.LegalProcedure) (*domain.LegalProcedure, error)
 	GetLegalProcedureByID(id string) (*domain.LegalProcedure, error)
+	GetLegalProcedures(offset, limit int) ([]domain.LegalProcedure, error)
+	CountLegalProcedures() (int, error)
 }
 
 type LegalProcedureRepositoryHandler struct {
@@ -63,4 +65,35 @@ func (h *LegalProcedureRepositoryHandler) GetLegalProcedureByID(id string) (*dom
 	}
 
 	return &legalProcedure, nil
+}
+
+func (h *LegalProcedureRepositoryHandler) GetLegalProcedures(offset, limit int) ([]domain.LegalProcedure, error) {
+	query := `SELECT id, label, description FROM lexon.legal_procedures ORDER BY id LIMIT $1 OFFSET $2`
+	rows, err := h.pool.Query(h.Ctx, query, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var legalProcedures []domain.LegalProcedure
+	for rows.Next() {
+		var legalProcedure domain.LegalProcedure
+		err := rows.Scan(&legalProcedure.ID, &legalProcedure.Label, &legalProcedure.Description)
+		if err != nil {
+			return nil, err
+		}
+		legalProcedures = append(legalProcedures, legalProcedure)
+	}
+
+	return legalProcedures, nil
+}
+
+func (h *LegalProcedureRepositoryHandler) CountLegalProcedures() (int, error) {
+	query := `SELECT COUNT(*) FROM lexon.legal_procedures`
+	var count int
+	err := h.pool.QueryRow(h.Ctx, query).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }
