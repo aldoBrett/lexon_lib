@@ -5,39 +5,39 @@ import (
 )
 
 type CreateParams struct {
-	legalProcedure LegalProcedure
-	legalRecord    LegalRecord
-	legalClaims    []LegalClaim
-	initialize     *bool
+	LegalProcedure LegalProcedure
+	LegalRecord    LegalRecord
+	LegalClaims    []LegalClaim
+	Initialize     *bool
 }
 
 func (e *EngineHandler) Create(params CreateParams) error {
 	// Default initialize to true if not provided
 	initialize := true
-	if params.initialize != nil {
-		initialize = *params.initialize
+	if params.Initialize != nil {
+		initialize = *params.Initialize
 	}
 
-	savedLegalProcedure, err := e.repos.LegalProcedure.SaveLegalProcedure(params.legalProcedure)
+	savedLegalProcedure, err := e.repos.LegalProcedure.SaveLegalProcedure(params.LegalProcedure)
 	if err != nil {
 		return err
 	}
 	e.legalProcedure = savedLegalProcedure
 
-	if _, err := e.repos.MachineInstances.CreateMachineInstanceForLegalProcedure(params.legalProcedure.ID); err != nil {
+	if _, err := e.repos.MachineInstances.CreateMachineInstanceForLegalProcedure(params.LegalProcedure.ID); err != nil {
 		return err
 	}
 
 	// e.repos.LegalProcedure.SaveLegalProcedure(params.legalProcedure)
-	legalRecord := params.legalRecord
-	legalRecord.LegalProcedureID = &params.legalProcedure.ID
+	legalRecord := params.LegalRecord
+	legalRecord.LegalProcedureID = &params.LegalProcedure.ID
 
 	savedLegalRecord, err := e.repos.LegalRecord.SaveLegalRecord(legalRecord)
 	if err != nil {
 		return err
 	}
 
-	for _, claim := range params.legalClaims {
+	for _, claim := range params.LegalClaims {
 		claim.LegalRecordID = savedLegalRecord.ID
 
 		e.repos.LegalClaims.SaveLegalClaim(claim)
@@ -50,7 +50,7 @@ func (e *EngineHandler) Create(params CreateParams) error {
 		// }
 
 		// We're going to initalize the machine because the user has set the legal claims
-		if params.legalClaims != nil {
+		if params.LegalClaims != nil {
 			eventID := "CIV.ORD.E001"
 
 			_, err := e.ProcessSignal(ProcessSignalParams{

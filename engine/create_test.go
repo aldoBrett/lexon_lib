@@ -58,10 +58,10 @@ func TestEngineCreate(t *testing.T) {
 
 		initialize := true
 		engine.Create(CreateParams{
-			legalProcedure: legalProcedure,
-			legalRecord:    legalRecord,
-			legalClaims:    legalClaims,
-			initialize:     &initialize,
+			LegalProcedure: legalProcedure,
+			LegalRecord:    legalRecord,
+			LegalClaims:    legalClaims,
+			Initialize:     &initialize,
 		})
 
 		// Get the current state of the machine instance

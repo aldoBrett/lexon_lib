@@ -59,10 +59,10 @@ func TestEngineProcessSignal(t *testing.T) {
 
 		initialize := false
 		engine.Create(CreateParams{
-			legalProcedure: legalProcedure,
-			legalRecord:    legalRecord,
-			legalClaims:    legalClaims,
-			initialize:     &initialize,
+			LegalProcedure: legalProcedure,
+			LegalRecord:    legalRecord,
+			LegalClaims:    legalClaims,
+			Initialize:     &initialize,
 		})
 
 		eventID := "CIV.ORD.E001"
@@ -123,10 +123,10 @@ func TestEngineProcessSignal(t *testing.T) {
 
 		initialize := false
 		engine.Create(CreateParams{
-			legalProcedure: legalProcedure,
-			legalRecord:    legalRecord,
-			legalClaims:    legalClaims,
-			initialize:     &initialize,
+			LegalProcedure: legalProcedure,
+			LegalRecord:    legalRecord,
+			LegalClaims:    legalClaims,
+			Initialize:     &initialize,
 		})
 
 		eventID := "CIV.ORD.E001"
