@@ -13,6 +13,8 @@ type Repositories struct {
 	MachineInstances          MachineInstancesRepository
 	MachineTransitions        MachineTransitionsRepository
 	MachineTransitionsHistory MachineStateTransitionsHistoryRepository
+	MachineStates             MachineStatesRepository
+	MachineStateStages        MachineStateStagesRepository
 }
 
 func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
@@ -23,5 +25,7 @@ func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
 		MachineInstances:          NewMachineInstancesRepositoryHandler(ctx, pool),
 		MachineTransitions:        NewMachineTransitionsRepositoryHandler(ctx, pool),
 		MachineTransitionsHistory: NewMachineStateTransitionsHistoryRepositoryHandler(ctx, pool),
+		MachineStates:             NewMachineStatesRepositoryHandler(ctx, pool),
+		MachineStateStages:        NewMachineStateStagesRepositoryHandler(ctx, pool),
 	}
 }
