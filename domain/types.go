@@ -50,10 +50,10 @@ type MachineStateStage struct {
 
 type MachineState struct {
 	ID          string `json:"id"`
-	Code        string `json:"code"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	StageID     string `json:"stage_id"`
+	Kind        string `json:"kind"`
 }
 
 type MachineStateTransition struct {
