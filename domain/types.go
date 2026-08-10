@@ -39,12 +39,21 @@ type DocumentData struct {
 	Kind string `json:"kind"`
 }
 
+type MachineStateStage struct {
+	ID          string `json:"id"`
+	Code        string `json:"code"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Content     string `json:"content"`
+	StageOrder  int    `json:"stage_order"`
+}
+
 type MachineState struct {
 	ID          string `json:"id"`
 	Code        string `json:"code"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Stage       string `json:"stage"`
+	StageID     string `json:"stage_id"`
 }
 
 type MachineStateTransition struct {

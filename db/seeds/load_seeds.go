@@ -15,6 +15,10 @@ import (
 // foreign keys as currently defined in migration 003, pending a decision on
 // how to represent them.
 func Load(ctx context.Context, pool *pgxpool.Pool) error {
+	if err := SeedMachineStateStages(ctx, pool); err != nil {
+		return fmt.Errorf("seeds: load machine state stages: %w", err)
+	}
+
 	if err := SeedMachineStates(ctx, pool); err != nil {
 		return fmt.Errorf("seeds: load machine states: %w", err)
 	}
