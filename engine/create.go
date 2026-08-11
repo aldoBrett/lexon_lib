@@ -65,6 +65,23 @@ func (e *EngineHandler) Create(params CreateParams) error {
 			if err != nil {
 				return err
 			}
+
+			if params.LegalRecord.LegalActionID != nil {
+				legalActionEventID := "CIV.ORD.E002"
+
+				_, err := e.ProcessSignal(ProcessSignalParams{
+					signal: MachineSignal{
+						ID:      uuid.New().String(),
+						Code:    "",
+						Origin:  "system",
+						EventID: &legalActionEventID,
+					},
+				})
+
+				if err != nil {
+					return err
+				}
+			}
 		}
 
 	}

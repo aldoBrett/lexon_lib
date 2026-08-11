@@ -34,7 +34,8 @@ func TestEngineCreate(t *testing.T) {
 		t.Fatalf("Failed to clean up machine_state_transitions_history table: %v", err)
 	}
 
-	t.Run("Create an engine with initialize set to true and arrive to CIV.ORD.E002", func(t *testing.T) {
+	t.Run("Create an engine with initialize set to true and arrive to CIV.ORD.E000", func(t *testing.T) {
+		// We arrive to CIV.ORD.S00 because we have legal claims but no legal action
 		engine := NewEngineHandler(EngineParams{
 			Ctx:  context.Background(),
 			Pool: pool,
@@ -47,8 +48,9 @@ func TestEngineCreate(t *testing.T) {
 			Description: "Test Legal Procedure Description",
 		}
 		legalRecord := LegalRecord{
-			Actor:     "Test Actor",
-			Defendant: "Test Defendant",
+			LegalProcedureID: &legalProcedureId,
+			Actor:            "Test Actor",
+			Defendant:        "Test Defendant",
 		}
 		legalClaims := []LegalClaim{
 			{
@@ -75,12 +77,51 @@ func TestEngineCreate(t *testing.T) {
 		if machineInstance.CurrentStateID == nil || *machineInstance.CurrentStateID != currentStateID {
 			t.Errorf("Expected current state ID to be %s, but got %v", currentStateID, machineInstance.CurrentStateID)
 		}
-		// if machineInstance.CurrentStateID != nil {
-		// 	currentStateID = *machineInstance.CurrentStateID
-		// }
+	})
 
-		// if currentStateID != "CIV.ORD.S02" {
-		// 	t.Errorf("Expected current state ID to be CIV.ORD.S02, but got %s", currentStateID)
-		// }
+	t.Run("Create an engine with initialize set to true and arrive to CIV.ORD.E001", func(t *testing.T) {
+		engine := NewEngineHandler(EngineParams{
+			Ctx:  context.Background(),
+			Pool: pool,
+		})
+
+		legalProcedureId := uuid.New().String()
+		legalProcedure := LegalProcedure{
+			ID:          legalProcedureId,
+			Label:       "Test Legal Procedure",
+			Description: "Test Legal Procedure Description",
+		}
+		legalActionId := "ACT.CIV.0001"
+		legalRecord := LegalRecord{
+			LegalProcedureID: &legalProcedureId,
+			Actor:            "Test Actor",
+			Defendant:        "Test Defendant",
+			LegalActionID:    &legalActionId,
+		}
+		legalClaims := []LegalClaim{
+			{
+				Description: "Legal claim description",
+			},
+		}
+
+		initialize := true
+		engine.Create(CreateParams{
+			LegalProcedure: legalProcedure,
+			LegalRecord:    legalRecord,
+			LegalClaims:    legalClaims,
+			Initialize:     &initialize,
+		})
+
+		// Get the current state of the machine instance
+		machineInstance, err := engine.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(legalProcedureId)
+		if err != nil {
+			t.Fatalf("Failed to retrieve machine instance: %v", err)
+		}
+
+		// TODO: we have to check this final state when we add the other initialization signal
+		currentStateID := "CIV.ORD.S01"
+		if machineInstance.CurrentStateID == nil || *machineInstance.CurrentStateID != currentStateID {
+			t.Errorf("Expected current state ID to be %s, but got %v", currentStateID, machineInstance.CurrentStateID)
+		}
 	})
 }

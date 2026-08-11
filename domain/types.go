@@ -18,7 +18,7 @@ type LegalRecord struct {
 	Defendant        string  `json:"defendant"`
 	DefendantAddress *string `json:"defendant_address"`
 	// Id of the legal action associated with this legal record, if any. This field is optional and can be null.
-	ActionID *string `json:"action_id"`
+	LegalActionID *string `json:"legal_action_id"`
 }
 
 type LegalClaim struct {
