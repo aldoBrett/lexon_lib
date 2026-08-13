@@ -10,6 +10,8 @@ import (
 
 type MachineStateTransitionsHistoryRepository interface {
 	CreateMachineStateTransitionHistory(machineInstanceID string, transitionID string) (*domain.MachineStateTransitionHistory, error)
+	GetMachineStateTransitionsHistoryByMachineStateStageID(machineInstanceID string, machineStateStageID string) ([]*domain.MachineStateTransitionHistory, error)
+	GetMachineStateTransitionsHistoryByMachineInstanceID(machineInstanceID string) ([]*domain.MachineStateTransitionHistory, error)
 }
 
 type MachineStateTransitionsHistoryRepositoryHandler struct {
@@ -41,5 +43,65 @@ func (h *MachineStateTransitionsHistoryRepositoryHandler) CreateMachineStateTran
 	if err != nil {
 		return nil, err
 	}
+	return history, nil
+}
+
+func (h *MachineStateTransitionsHistoryRepositoryHandler) GetMachineStateTransitionsHistoryByMachineStateStageID(machineInstanceID string, machineStateStageID string) ([]*domain.MachineStateTransitionHistory, error) {
+	query := `SELECT h.id, h.machine_instance_id, h.transition_id, h.created_at
+		FROM lexon.machine_state_transitions_history h
+		JOIN lexon.machine_state_transitions t ON t.id = h.transition_id
+		JOIN lexon.machine_states s ON s.id = t.target_state_id
+		WHERE h.machine_instance_id = $1 AND s.stage_id = $2
+		ORDER BY h.created_at ASC`
+	rows, err := h.pool.Query(h.Ctx, query, machineInstanceID, machineStateStageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var history []*domain.MachineStateTransitionHistory
+	for rows.Next() {
+		h := &domain.MachineStateTransitionHistory{}
+		err := rows.Scan(
+			&h.ID,
+			&h.MachineInstanceID,
+			&h.TransitionID,
+			&h.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		history = append(history, h)
+	}
+
+	return history, nil
+}
+
+func (h *MachineStateTransitionsHistoryRepositoryHandler) GetMachineStateTransitionsHistoryByMachineInstanceID(machineInstanceID string) ([]*domain.MachineStateTransitionHistory, error) {
+	query := `SELECT id, machine_instance_id, transition_id, created_at
+		FROM lexon.machine_state_transitions_history
+		WHERE machine_instance_id = $1
+		ORDER BY created_at ASC`
+	rows, err := h.pool.Query(h.Ctx, query, machineInstanceID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var history []*domain.MachineStateTransitionHistory
+	for rows.Next() {
+		h := &domain.MachineStateTransitionHistory{}
+		err := rows.Scan(
+			&h.ID,
+			&h.MachineInstanceID,
+			&h.TransitionID,
+			&h.CreatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		history = append(history, h)
+	}
+
 	return history, nil
 }
