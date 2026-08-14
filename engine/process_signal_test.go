@@ -67,7 +67,7 @@ func TestEngineProcessSignal(t *testing.T) {
 
 		eventID := "CIV.ORD.E001"
 		updatedStateMachine, err := engine.ProcessSignal(ProcessSignalParams{
-			signal: domain.MachineSignal{
+			Signal: domain.MachineSignal{
 				ID:      uuid.New().String(),
 				Code:    "",
 				Origin:  "system",
@@ -131,7 +131,7 @@ func TestEngineProcessSignal(t *testing.T) {
 
 		eventID := "CIV.ORD.E001"
 		engine.ProcessSignal(ProcessSignalParams{
-			signal: domain.MachineSignal{
+			Signal: domain.MachineSignal{
 				ID:      uuid.New().String(),
 				Code:    "",
 				Origin:  "system",
@@ -141,7 +141,7 @@ func TestEngineProcessSignal(t *testing.T) {
 
 		eventID = "CIV.ORD.E002"
 		updatedStateMachine, err := engine.ProcessSignal(ProcessSignalParams{
-			signal: domain.MachineSignal{
+			Signal: domain.MachineSignal{
 				ID:      uuid.New().String(),
 				Code:    "",
 				Origin:  "system",
@@ -161,7 +161,7 @@ func TestEngineProcessSignal(t *testing.T) {
 
 		eventID = "CIV.ORD.E004"
 		updatedStateMachine, err = engine.ProcessSignal(ProcessSignalParams{
-			signal: domain.MachineSignal{
+			Signal: domain.MachineSignal{
 				ID:      uuid.New().String(),
 				Code:    "",
 				Origin:  "system",

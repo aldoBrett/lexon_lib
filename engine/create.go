@@ -54,7 +54,7 @@ func (e *EngineHandler) Create(params CreateParams) error {
 			eventID := "CIV.ORD.E001"
 
 			_, err := e.ProcessSignal(ProcessSignalParams{
-				signal: MachineSignal{
+				Signal: MachineSignal{
 					ID:      uuid.New().String(),
 					Code:    "",
 					Origin:  "system",
@@ -70,7 +70,7 @@ func (e *EngineHandler) Create(params CreateParams) error {
 				legalActionEventID := "CIV.ORD.E002"
 
 				_, err := e.ProcessSignal(ProcessSignalParams{
-					signal: MachineSignal{
+					Signal: MachineSignal{
 						ID:      uuid.New().String(),
 						Code:    "",
 						Origin:  "system",

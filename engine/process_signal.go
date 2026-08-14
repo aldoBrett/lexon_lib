@@ -6,8 +6,8 @@ import (
 )
 
 type ProcessSignalParams struct {
-	signal           MachineSignal
-	legalProcedureID *string
+	Signal           MachineSignal
+	LegalProcedureID *string
 }
 
 // applyTransition moves a MachineInstance to the target state of the given transition and
@@ -33,9 +33,9 @@ func (e *EngineHandler) applyTransition(machineInstance *domain.MachineInstance,
 
 func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.MachineInstance, error) {
 
-	if params.legalProcedureID != nil {
+	if params.LegalProcedureID != nil {
 		//? Should this go?
-		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(*params.legalProcedureID)
+		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(*params.LegalProcedureID)
 		if err != nil {
 			fmt.Println("Error retrieving machine instance:", err)
 			return nil, err
@@ -47,7 +47,7 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 
 	}
 
-	if params.signal.EventID != nil {
+	if params.Signal.EventID != nil {
 		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(e.legalProcedure.ID)
 		if err != nil {
 			fmt.Println("Error retrieving machine instance:", err)
@@ -59,7 +59,7 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 			currentStateID = *machineInstance.CurrentStateID
 		}
 
-		transition, err := e.repos.MachineTransitions.GetMachineTransitionBySourceAndEvent(currentStateID, *params.signal.EventID)
+		transition, err := e.repos.MachineTransitions.GetMachineTransitionBySourceAndEvent(currentStateID, *params.Signal.EventID)
 		if err != nil {
 			fmt.Println("Error retrieving transition:", err)
 			return nil, err
