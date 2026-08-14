@@ -33,6 +33,7 @@ func (e *EngineHandler) applyTransition(machineInstance *domain.MachineInstance,
 
 func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.MachineInstance, error) {
 
+	var legalProcedureID string
 	if params.LegalProcedureID != nil {
 		//? Should this go?
 		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(*params.LegalProcedureID)
@@ -45,10 +46,15 @@ func (e *EngineHandler) ProcessSignal(params ProcessSignalParams) (*domain.Machi
 		fmt.Println("Current State ID:", machineInstance.CurrentStateID)
 		fmt.Println("Legal Procedure ID:", machineInstance.LegalProcedureID)
 
+		legalProcedureID = *params.LegalProcedureID
+
+	}
+	if legalProcedureID == "" {
+		legalProcedureID = e.legalProcedure.ID
 	}
 
 	if params.Signal.EventID != nil {
-		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(e.legalProcedure.ID)
+		machineInstance, err := e.repos.MachineInstances.GetMachineInstanceByLegalProcedureID(legalProcedureID)
 		if err != nil {
 			fmt.Println("Error retrieving machine instance:", err)
 			return nil, err
