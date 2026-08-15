@@ -68,7 +68,7 @@ func (h *LegalProcedureRepositoryHandler) GetLegalProcedureByID(id string) (*dom
 }
 
 func (h *LegalProcedureRepositoryHandler) GetLegalProcedures(offset, limit int) ([]domain.LegalProcedure, error) {
-	query := `SELECT id, label, description FROM lexon.legal_procedures ORDER BY id LIMIT $1 OFFSET $2`
+	query := `SELECT id, label, description FROM lexon.legal_procedures ORDER BY created_at DESC LIMIT $1 OFFSET $2`
 	rows, err := h.pool.Query(h.Ctx, query, limit, offset)
 	if err != nil {
 		return nil, err
