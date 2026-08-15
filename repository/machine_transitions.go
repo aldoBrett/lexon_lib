@@ -11,6 +11,7 @@ type MachineTransitionsRepository interface {
 	GetMachineTransitionByID(transitionID string) (*domain.MachineStateTransition, error)
 	GetMachineTransitionBySourceAndEvent(sourceStateID string, eventID string) (*domain.MachineStateTransition, error)
 	GetMachineStateTransitionsByHistoryIDs(historyIDs []string) ([]*domain.MachineStateTransition, error)
+	GetMachineStateTransitionsBySourceStateID(sourceStateID string) ([]*domain.MachineStateTransition, error)
 }
 
 type MachineTransitionsRepositoryHandler struct {
