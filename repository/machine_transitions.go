@@ -97,3 +97,35 @@ func (h *MachineTransitionsRepositoryHandler) GetMachineStateTransitionsByHistor
 
 	return transitions, nil
 }
+
+func (h *MachineTransitionsRepositoryHandler) GetMachineStateTransitionsBySourceStateID(sourceStateID string) ([]*domain.MachineStateTransition, error) {
+	transitions := []*domain.MachineStateTransition{}
+	query := `SELECT id, source_state_id, target_state_id, event_id, condition, actions, risk, note, created_at, updated_at FROM lexon.machine_state_transitions WHERE source_state_id = $1`
+	rows, err := h.pool.Query(h.Ctx, query, sourceStateID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		machineTransition := &domain.MachineStateTransition{}
+		err := rows.Scan(
+			&machineTransition.ID,
+			&machineTransition.SourceStateID,
+			&machineTransition.TargetStateID,
+			&machineTransition.EventID,
+			&machineTransition.Condition,
+			&machineTransition.Actions,
+			&machineTransition.Risk,
+			&machineTransition.Note,
+			&machineTransition.CreatedAt,
+			&machineTransition.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		transitions = append(transitions, machineTransition)
+	}
+
+	return transitions, nil
+}

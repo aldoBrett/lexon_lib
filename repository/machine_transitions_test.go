@@ -55,4 +55,23 @@ func TestMachineTransitionsRepository(t *testing.T) {
 			t.Fatalf("Expected event ID %s, but got %s", eventID, machineTransition.EventID)
 		}
 	})
+
+	t.Run("Get machine transitions by source state ID", func(t *testing.T) {
+		sourceStateID := "CIV.ORD.S00"
+
+		machineTransitions, err := repository.GetMachineStateTransitionsBySourceStateID(sourceStateID)
+		if err != nil {
+			t.Fatalf("Failed to get machine transitions by source state ID: %v", err)
+		}
+
+		if len(machineTransitions) == 0 {
+			t.Fatalf("Expected at least one machine transition, but got none")
+		}
+
+		for _, transition := range machineTransitions {
+			if transition.SourceStateID != sourceStateID {
+				t.Fatalf("Expected source state ID %s, but got %s", sourceStateID, transition.SourceStateID)
+			}
+		}
+	})
 }
