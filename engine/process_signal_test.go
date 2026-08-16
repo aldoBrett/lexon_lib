@@ -159,7 +159,7 @@ func TestEngineProcessSignal(t *testing.T) {
 			t.Fatalf("Expected current state ID to be 'CIV.ORD.S01', got '%s'", *updatedStateMachine.CurrentStateID)
 		}
 
-		eventID = "CIV.ORD.E004"
+		eventID = "CIV.ORD.E003"
 		updatedStateMachine, err = engine.ProcessSignal(ProcessSignalParams{
 			Signal: domain.MachineSignal{
 				ID:      uuid.New().String(),
