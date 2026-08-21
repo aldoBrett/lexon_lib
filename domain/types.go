@@ -116,3 +116,41 @@ type MachineSignal struct {
 	DocumentType string  `json:"document_type"`
 	EventID      *string `json:"event_id,omitempty"`
 }
+
+type LegalDocument struct {
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}
+
+type LegalDocumentField struct {
+	ID    string `json:"id"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+	// Box   FieldBox `json:"box"`
+}
+
+type LegalDocumentSubmission struct {
+	ID              string `json:"id"`
+	LegalDocumentID string `json:"legal_document_id"`
+}
+
+type LegalDocumentSubmissionField struct {
+	ID                        string  `json:"id"`
+	LegalDocumentSubmissionID string  `json:"legal_document_submission_id"`
+	LegalDocumentFieldID      string  `json:"legal_document_field_id"`
+	Value                     string  `json:"value"`
+	BoxPage                   int     `json:"box_page"`
+	BoxX                      float64 `json:"box_x"`
+	BoxY                      float64 `json:"box_y"`
+	BoxWidth                  float64 `json:"box_width"`
+	BoxHeight                 float64 `json:"box_height"`
+}
+
+// type FieldBox struct {
+// 	Page   int     `json:"page"`
+// 	X      float64 `json:"x"`
+// 	Y      float64 `json:"y"`
+// 	Width  float64 `json:"width"`
+// 	Height float64 `json:"height"`
+// }

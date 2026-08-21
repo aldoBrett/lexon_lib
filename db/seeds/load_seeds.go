@@ -35,5 +35,13 @@ func Load(ctx context.Context, pool *pgxpool.Pool) error {
 		return fmt.Errorf("seeds: load legal actions: %w", err)
 	}
 
+	if err := SeedLegalDocuments(ctx, pool); err != nil {
+		return fmt.Errorf("seeds: load legal documents: %w", err)
+	}
+
+	if err := SeedLegalDocumentFields(ctx, pool); err != nil {
+		return fmt.Errorf("seeds: load legal document fields: %w", err)
+	}
+
 	return nil
 }
