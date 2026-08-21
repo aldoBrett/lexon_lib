@@ -18,6 +18,7 @@ type Repositories struct {
 	MachineEvents             MachineEventsRepository
 	LegalActions              LegalActionsRepository
 	LegalDocuments            LegalDocumentsRepository
+	LegalDocumentFields       LegalDocumentFieldsRepository
 }
 
 func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
@@ -33,5 +34,6 @@ func NewRepositories(ctx context.Context, pool *pgxpool.Pool) *Repositories {
 		MachineEvents:             NewMachineEventsRepositoryHandler(ctx, pool),
 		LegalActions:              NewLegalActionsRepositoryHandler(ctx, pool),
 		LegalDocuments:            NewLegalDocumentsRepositoryHandler(ctx, pool),
+		LegalDocumentFields:       NewLegalDocumentFieldsRepositoryHandler(ctx, pool),
 	}
 }
