@@ -124,9 +124,9 @@ type LegalDocument struct {
 }
 
 type LegalDocumentField struct {
-	ID    string `json:"id"`
-	Name  string `json:"name"`
-	Value string `json:"value"`
+	ID          string `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 	// Box   FieldBox `json:"box"`
 }
 
